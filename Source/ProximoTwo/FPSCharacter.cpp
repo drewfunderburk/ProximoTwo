@@ -3,6 +3,8 @@
 
 #include "FPSCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "DrawDebugHelpers.h"
 
 //#include "Runtime/Engine/Public/EngineGlobals.h"
 //if (GEngine)
@@ -47,6 +49,11 @@ void AFPSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UCapsuleComponent* capsule = GetCapsuleComponent();
+	FVector start = capsule->GetComponentLocation();
+	FVector end = start + FVector(0, 0, 1) * capsule->GetScaledCapsuleHalfHeight() * 1.1f;
+
+	DrawDebugLine(GetWorld(), start, end, FColor(0, 0.8f, 0, 1.0f));
 }
 
 // Called to bind functionality to input
@@ -63,7 +70,6 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void AFPSCharacter::MoveHorizontal(float value)
 {
 	if (!value) return;
-
 	AddMovementInput(GetActorRightVector(), value);
 }
 
@@ -86,5 +92,17 @@ void AFPSCharacter::AimVertical(float value)
 	if (InvertY)
 		amount *= -1;
 	AddControllerPitchInput(amount);
+}
+
+bool AFPSCharacter::CanUncrouch()
+{
+	UCapsuleComponent* capsule = GetCapsuleComponent();
+	FVector start = capsule->GetComponentLocation();
+	FVector end = start + FVector(0, 0, 1) * capsule->GetScaledCapsuleHalfHeight() * 1.1f;
+
+	FHitResult hit;
+	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility))
+		return false;
+	return true;
 }
 

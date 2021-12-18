@@ -36,6 +36,9 @@ private:
 	void AimHorizontal(float value);
 	void AimVertical(float value);
 
+	UFUNCTION(BlueprintCallable, Category = "FPSCharacter")
+	bool CanUncrouch();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		float MouseSensitivity;
