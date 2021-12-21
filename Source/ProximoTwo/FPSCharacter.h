@@ -30,6 +30,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	UFUNCTION(BlueprintNativeEvent, meta = (AllowPrivateAccess = "true"))
+	void OnUncrouch();
+
 private:
 	void MoveHorizontal(float value);
 	void MoveVertical(float value);
@@ -49,6 +53,11 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Camera")
-		UCameraComponent* camera;
-	float m_BaseWalkSpeed;
+	UCameraComponent* camera;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool wantsToUncrouch = false;
+
+	float initialCapsuleHalfHeight;
+	float baseWalkSpeed;
 };

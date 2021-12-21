@@ -34,7 +34,9 @@ AFPSCharacter::AFPSCharacter()
 	MouseSensitivity = 1.0f;
 	InvertY = false;
 	SprintSpeedMultiplier = 2.0f;
-	m_BaseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
+	initialCapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	baseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 // Called when the game starts or when spawned
@@ -49,11 +51,11 @@ void AFPSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UCapsuleComponent* capsule = GetCapsuleComponent();
-	FVector start = capsule->GetComponentLocation();
-	FVector end = start + FVector(0, 0, 1) * capsule->GetScaledCapsuleHalfHeight() * 1.1f;
-
-	DrawDebugLine(GetWorld(), start, end, FColor(0, 0.8f, 0, 1.0f));
+	if (wantsToUncrouch && CanUncrouch())
+	{
+		OnUncrouch();
+		OnUncrouch_Implementation();
+	}
 }
 
 // Called to bind functionality to input
@@ -97,12 +99,28 @@ void AFPSCharacter::AimVertical(float value)
 bool AFPSCharacter::CanUncrouch()
 {
 	UCapsuleComponent* capsule = GetCapsuleComponent();
+
+	float halfHeight = capsule->GetScaledCapsuleHalfHeight();
+	float halfHeightDiff = initialCapsuleHalfHeight - halfHeight + 2;
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::Printf(TEXT("%f | %f | %f"), initialCapsuleHalfHeight, halfHeight, halfHeightDiff));
 	FVector start = capsule->GetComponentLocation();
-	FVector end = start + FVector(0, 0, 1) * capsule->GetScaledCapsuleHalfHeight() * 1.1f;
+	FVector end = start + (FVector(0, 0, 1) * (initialCapsuleHalfHeight + halfHeightDiff));
+
+	FCollisionQueryParams collisionParams;
 
 	FHitResult hit;
-	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility))
+	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Visibility, collisionParams))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::Printf(TEXT("%s"), *hit.ImpactPoint.ToString()));
 		return false;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::Printf(TEXT("%f"), *start.ToString()));
 	return true;
+}
+
+void AFPSCharacter::OnUncrouch_Implementation()
+{
+	wantsToUncrouch = false;
 }
 
