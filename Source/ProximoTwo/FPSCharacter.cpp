@@ -38,6 +38,7 @@ AFPSCharacter::AFPSCharacter()
 
 	FCollisionShape shape = GetCapsuleComponent()->GetCollisionShape();
 	initialCapsuleCollisionShape = FCollisionShape::MakeCapsule(shape.GetCapsuleRadius() * 1.05f, shape.GetCapsuleHalfHeight() * 1.05f);
+	capsuleStartHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	
 	baseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }

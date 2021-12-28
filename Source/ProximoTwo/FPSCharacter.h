@@ -71,6 +71,9 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool isCrouched = false;
 
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float capsuleStartHeight = 0.0f;
+
 	FCollisionShape initialCapsuleCollisionShape;
 	float baseWalkSpeed;
 };
