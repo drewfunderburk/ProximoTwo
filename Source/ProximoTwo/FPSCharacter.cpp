@@ -36,11 +36,9 @@ AFPSCharacter::AFPSCharacter()
 	InvertY = false;
 	SprintSpeedMultiplier = 2.0f;
 
-	UCapsuleComponent* capsule = GetCapsuleComponent();
-	FCollisionShape shape = capsule->GetCollisionShape();
+	FCollisionShape shape = GetCapsuleComponent()->GetCollisionShape();
 	initialCapsuleCollisionShape = FCollisionShape::MakeCapsule(shape.GetCapsuleRadius() * 1.05f, shape.GetCapsuleHalfHeight() * 1.05f);
 	
-
 	baseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
@@ -72,16 +70,20 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	InputComponent->BindAxis("Move Y", this, &AFPSCharacter::MoveVertical);
 	InputComponent->BindAxis("Aim X", this, &AFPSCharacter::AimHorizontal);
 	InputComponent->BindAxis("Aim Y", this, &AFPSCharacter::AimVertical);
+	InputComponent->BindAction("Sprint", IE_Pressed, this, &AFPSCharacter::Sprint);
+	InputComponent->BindAction("Sprint", IE_Released, this, &AFPSCharacter::UnSprint);
 }
 
 void AFPSCharacter::MoveHorizontal(float value)
 {
+	horizontalMoveInputValue = value;
 	if (!value) return;
 	AddMovementInput(GetActorRightVector(), value);
 }
 
 void AFPSCharacter::MoveVertical(float value)
 {
+	verticalMoveInputValue = value;
 	if (!value) return;
 	AddMovementInput(GetActorForwardVector(), value);
 }
@@ -101,21 +103,33 @@ void AFPSCharacter::AimVertical(float value)
 	AddControllerPitchInput(amount);
 }
 
+void AFPSCharacter::Sprint()
+{
+	if (verticalMoveInputValue > 0 && !GetCharacterMovement()->IsCrouching())
+		GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed * SprintSpeedMultiplier;
+}
+
+void AFPSCharacter::UnSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+}
+
 bool AFPSCharacter::CanUncrouch()
 {
+	// Get the capsule component
 	UCapsuleComponent* capsule = GetCapsuleComponent();
 	
+	// Find the difference in half height between the crouched and uncrouched capsule
 	float currentHalfHeight = capsule->GetScaledCapsuleHalfHeight();
 	float halfHeightDiff = initialCapsuleCollisionShape.GetCapsuleHalfHeight() - currentHalfHeight;
 
-	FVector start = capsule->GetComponentLocation();
-	start.Z += halfHeightDiff;
+	// Set the location to begin the capsule overlap
+	FVector origin = capsule->GetComponentLocation();
+	origin.Z += halfHeightDiff;
 	
-	if (GetWorld()->OverlapBlockingTestByChannel(start, FQuat::Identity, ECC_Visibility, initialCapsuleCollisionShape))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::Printf(TEXT("false")));
+	// Check the shape of the original capsule for collisions
+	if (GetWorld()->OverlapBlockingTestByChannel(origin, FQuat::Identity, ECC_Visibility, initialCapsuleCollisionShape))
 		return false;
-	}
 	return true;
 }
 

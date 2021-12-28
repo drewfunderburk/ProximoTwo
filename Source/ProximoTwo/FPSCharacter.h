@@ -41,6 +41,8 @@ private:
 	void MoveVertical(float value);
 	void AimHorizontal(float value);
 	void AimVertical(float value);
+	void Sprint();
+	void UnSprint();
 
 	UFUNCTION(BlueprintCallable, Category = "FPSCharacter")
 	bool CanUncrouch();
@@ -59,6 +61,15 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool wantsToUncrouch = false;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float verticalMoveInputValue = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float horizontalMoveInputValue = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool isCrouched = false;
 
 	FCollisionShape initialCapsuleCollisionShape;
 	float baseWalkSpeed;
