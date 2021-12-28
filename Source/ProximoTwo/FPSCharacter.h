@@ -10,6 +10,8 @@
 
 #include "FPSCharacter.generated.h"
 
+struct FCollisionShape;
+
 UCLASS()
 class PROXIMOTWO_API AFPSCharacter : public ACharacter
 {
@@ -31,7 +33,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	UFUNCTION(BlueprintNativeEvent, meta = (AllowPrivateAccess = "true"))
+	UFUNCTION(BlueprintNativeEvent)
 	void OnUncrouch();
 
 private:
@@ -58,6 +60,6 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool wantsToUncrouch = false;
 
-	float initialCapsuleHalfHeight;
+	FCollisionShape initialCapsuleCollisionShape;
 	float baseWalkSpeed;
 };

@@ -5,6 +5,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
+#include "CollisionShape.h"
 
 //#include "Runtime/Engine/Public/EngineGlobals.h"
 //if (GEngine)
@@ -35,7 +36,11 @@ AFPSCharacter::AFPSCharacter()
 	InvertY = false;
 	SprintSpeedMultiplier = 2.0f;
 
-	initialCapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	UCapsuleComponent* capsule = GetCapsuleComponent();
+	FCollisionShape shape = capsule->GetCollisionShape();
+	initialCapsuleCollisionShape = FCollisionShape::MakeCapsule(shape.GetCapsuleRadius() * 1.05f, shape.GetCapsuleHalfHeight() * 1.05f);
+	
+
 	baseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
@@ -99,23 +104,18 @@ void AFPSCharacter::AimVertical(float value)
 bool AFPSCharacter::CanUncrouch()
 {
 	UCapsuleComponent* capsule = GetCapsuleComponent();
+	
+	float currentHalfHeight = capsule->GetScaledCapsuleHalfHeight();
+	float halfHeightDiff = initialCapsuleCollisionShape.GetCapsuleHalfHeight() - currentHalfHeight;
 
-	float halfHeight = capsule->GetScaledCapsuleHalfHeight();
-	float halfHeightDiff = initialCapsuleHalfHeight - halfHeight + 2;
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::Printf(TEXT("%f | %f | %f"), initialCapsuleHalfHeight, halfHeight, halfHeightDiff));
 	FVector start = capsule->GetComponentLocation();
-	FVector end = start + (FVector(0, 0, 1) * (initialCapsuleHalfHeight + halfHeightDiff));
-
-	FCollisionQueryParams collisionParams;
-
-	FHitResult hit;
-	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Visibility, collisionParams))
+	start.Z += halfHeightDiff;
+	
+	if (GetWorld()->OverlapBlockingTestByChannel(start, FQuat::Identity, ECC_Visibility, initialCapsuleCollisionShape))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::Printf(TEXT("%s"), *hit.ImpactPoint.ToString()));
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::Printf(TEXT("false")));
 		return false;
 	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::Printf(TEXT("%f"), *start.ToString()));
 	return true;
 }
 
