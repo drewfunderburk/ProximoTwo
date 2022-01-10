@@ -43,35 +43,39 @@ private:
 	void AimVertical(float value);
 	void Sprint();
 	void UnSprint();
+	void Interact();
 
 	UFUNCTION(BlueprintCallable, Category = "FPSCharacter")
 	bool CanUncrouch();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-		float MouseSensitivity;
+		float MouseSensitivity = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-		bool InvertY;
+		bool InvertY = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-		float SprintSpeedMultiplier;
+		float SprintSpeedMultiplier = 2.0f;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	UCameraComponent* camera;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
+	float interactRange = 250.0f;
+
+	UPROPERTY(BlueprintReadWrite, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	bool wantsToUncrouch = false;
 
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	float verticalMoveInputValue = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	float horizontalMoveInputValue = 0.0f;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	bool isCrouched = false;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	float capsuleStartHeight = 0.0f;
 
 	FCollisionShape initialCapsuleCollisionShape;

@@ -6,6 +6,8 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "CollisionShape.h"
+#include "Containers/Array.h"
+#include "Interactable.h"
 
 //#include "Runtime/Engine/Public/EngineGlobals.h"
 //if (GEngine)
@@ -32,10 +34,6 @@ AFPSCharacter::AFPSCharacter()
 	camera->bUsePawnControlRotation = true;
 
 	// Initialize default variables
-	MouseSensitivity = 1.0f;
-	InvertY = false;
-	SprintSpeedMultiplier = 2.0f;
-
 	FCollisionShape shape = GetCapsuleComponent()->GetCollisionShape();
 	initialCapsuleCollisionShape = FCollisionShape::MakeCapsule(shape.GetCapsuleRadius() * 1.05f, shape.GetCapsuleHalfHeight() * 1.05f);
 	capsuleStartHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
@@ -73,6 +71,7 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	InputComponent->BindAxis("Aim Y", this, &AFPSCharacter::AimVertical);
 	InputComponent->BindAction("Sprint", IE_Pressed, this, &AFPSCharacter::Sprint);
 	InputComponent->BindAction("Sprint", IE_Released, this, &AFPSCharacter::UnSprint);
+	InputComponent->BindAction("Interact", IE_Pressed, this, &AFPSCharacter::Interact);
 }
 
 void AFPSCharacter::MoveHorizontal(float value)
@@ -113,6 +112,24 @@ void AFPSCharacter::Sprint()
 void AFPSCharacter::UnSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+}
+
+void AFPSCharacter::Interact()
+{
+	// Find start and end points for linetrace
+	FVector start = camera->GetComponentLocation();
+	FVector end = start + camera->GetForwardVector() * interactRange;
+
+	// Linetrace
+	FHitResult hit;
+	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility))
+	{
+		// If hit actor implements IInteractable, call OnInteract
+		if (hit.GetActor()->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+		{
+			IInteractable::Execute_OnInteract(hit.GetActor());
+		}
+	}
 }
 
 bool AFPSCharacter::CanUncrouch()
