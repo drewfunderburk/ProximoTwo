@@ -37,8 +37,7 @@ AFPSCharacter::AFPSCharacter()
 	FCollisionShape shape = GetCapsuleComponent()->GetCollisionShape();
 	initialCapsuleCollisionShape = FCollisionShape::MakeCapsule(shape.GetCapsuleRadius() * 1.05f, shape.GetCapsuleHalfHeight() * 1.05f);
 	capsuleStartHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	
-	baseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +45,7 @@ void AFPSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	baseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 // Called every frame
@@ -69,8 +69,10 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	InputComponent->BindAxis("Move Y", this, &AFPSCharacter::MoveVertical);
 	InputComponent->BindAxis("Aim X", this, &AFPSCharacter::AimHorizontal);
 	InputComponent->BindAxis("Aim Y", this, &AFPSCharacter::AimVertical);
+
 	InputComponent->BindAction("Sprint", IE_Pressed, this, &AFPSCharacter::Sprint);
 	InputComponent->BindAction("Sprint", IE_Released, this, &AFPSCharacter::UnSprint);
+
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 

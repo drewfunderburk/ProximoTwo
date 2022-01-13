@@ -78,6 +78,8 @@ private:
 	UPROPERTY(BlueprintReadWrite, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	float capsuleStartHeight = 0.0f;
 
-	FCollisionShape initialCapsuleCollisionShape;
+	UPROPERTY(BlueprintReadOnly, Category = "FPSCharacter", meta = (AllowPrivateAccess = "true"))
 	float baseWalkSpeed;
+
+	FCollisionShape initialCapsuleCollisionShape;
 };
