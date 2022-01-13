@@ -71,6 +71,9 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	InputComponent->BindAxis("Aim Y", this, &AFPSCharacter::AimVertical);
 	InputComponent->BindAction("Sprint", IE_Pressed, this, &AFPSCharacter::Sprint);
 	InputComponent->BindAction("Sprint", IE_Released, this, &AFPSCharacter::UnSprint);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
 	InputComponent->BindAction("Interact", IE_Pressed, this, &AFPSCharacter::Interact);
 }
 
