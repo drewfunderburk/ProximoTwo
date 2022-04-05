@@ -7,7 +7,7 @@
 #include "Interactable.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI, BlueprintType)
+UINTERFACE(MinimalAPI, BlueprintType, Blueprintable)
 class UInteractable : public UInterface
 {
 	GENERATED_BODY()
@@ -22,6 +22,6 @@ class PROXIMOTWO_API IInteractable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent, Category = "Interactable")
-	void OnInteract();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interactable")
+	void OnInteract(AActor* source);
 };

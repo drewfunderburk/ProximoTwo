@@ -29,10 +29,10 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hitscan Weapon")
-	float MaximumRange = 1000f;
+	float MaximumRange = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hitscan Weapon")
-	float OptimalRange = 500f;
+	float OptimalRange = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hitscan Weapon")
 	float FireRate = 3.0f;

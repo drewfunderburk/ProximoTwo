@@ -132,7 +132,7 @@ void AFPSCharacter::Interact()
 		// If hit actor implements IInteractable, call OnInteract
 		if (hit.GetActor()->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 		{
-			IInteractable::Execute_OnInteract(hit.GetActor());
+			IInteractable::Execute_OnInteract(hit.GetActor(), GetOwner());
 		}
 	}
 }
